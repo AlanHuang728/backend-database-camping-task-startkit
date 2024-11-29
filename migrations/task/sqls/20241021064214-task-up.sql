@@ -286,7 +286,7 @@ FROM (
 	    INNER JOIN "CREDIT_PACKAGE"
 	    ON "CREDIT_PACKAGE".id = "CREDIT_PURCHASE".credit_package_id
 	GROUP BY user_id
-    AS "CREDIT_PURCHASE"
+    )AS "CREDIT_PURCHASE"
     INNER JOIN (
         SELECT
             user_id,
