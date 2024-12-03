@@ -40,8 +40,7 @@ DELETE FROM "USER"
 WHERE email = 'opacity0@hexschooltest.io';
 -- 1-4 查詢：取得USER 資料表目前所有用戶數量（提示：使用count函式）
 SELECT COUNT(*) as 用戶數量
-FROM "USER"
-WHERE role = 'USER';
+FROM "USER";
 -- 1-5 查詢：取得 USER 資料表所有用戶資料，並列出前 3 筆（提示：使用limit語法）
 SELECT * FROM "USER"
 LIMIT 3;
@@ -277,7 +276,8 @@ GROUP BY user_id;
     -- inner join ( 用戶王小明的已使用堂數) as "COURSE_BOOKING"
     -- on "COURSE_BOOKING".user_id = "CREDIT_PURCHASE".user_id;
 SELECT
-	("CREDIT_PURCHASE".total_credit - "COURSE_BOOKING".used_credit) AS remaining_credit
+	"CREDIT_PURCHASE".user_id,
+    ("CREDIT_PURCHASE".total_credit - "COURSE_BOOKING".used_credit) AS remaining_credit
 FROM (
     SELECT
 	    user_id,
@@ -285,7 +285,8 @@ FROM (
     FROM "CREDIT_PURCHASE"
 	    INNER JOIN "CREDIT_PACKAGE"
 	    ON "CREDIT_PACKAGE".id = "CREDIT_PURCHASE".credit_package_id
-	GROUP BY user_id
+	where user_id = (SELECT id FROM "USER" WHERE email = 'wXlTq@hexschooltest.io')
+    GROUP BY user_id
     )AS "CREDIT_PURCHASE"
     INNER JOIN (
         SELECT
@@ -338,7 +339,7 @@ LIMIT 1;
 -- 6-3. 查詢：計算 11 月份組合包方案的銷售數量
 -- 顯示須包含以下欄位： 組合包方案名稱, 銷售數量
 SELECT
-    "CREDIT_PACKAGE".name AS 方案名稱,
+    "CREDIT_PACKAGE".name AS 組合包方案名稱,
     COUNT("CREDIT_PACKAGE".name) AS 銷售數量
 FROM "CREDIT_PURCHASE" 
     INNER JOIN "CREDIT_PACKAGE" 
@@ -347,15 +348,19 @@ WHERE "CREDIT_PURCHASE".purchase_at BETWEEN '2024-11-01' AND '2024-11-30'
 GROUP BY "CREDIT_PACKAGE".id;
 -- 6-4. 查詢：計算 11 月份總營收（使用 purchase_at 欄位統計）
 -- 顯示須包含以下欄位： 總營收
+
 SELECT
-    "CREDIT_PACKAGE".name AS 方案名稱,
-    COUNT("CREDIT_PACKAGE".name) AS 銷售數量,
-    (COUNT("CREDIT_PACKAGE".name) * "CREDIT_PACKAGE".price) AS 總營收
-FROM "CREDIT_PURCHASE" 
-    INNER JOIN "CREDIT_PACKAGE" 
-    ON "CREDIT_PACKAGE".id = "CREDIT_PURCHASE".credit_package_id
-WHERE "CREDIT_PURCHASE".purchase_at BETWEEN '2024-11-01' AND '2024-11-30'
-GROUP BY "CREDIT_PACKAGE".id;
+	sum(sale_count * total)
+FROM (SELECT
+        "CREDIT_PACKAGE".name,
+        COUNT("CREDIT_PACKAGE".name) AS sale_count,
+        (COUNT("CREDIT_PACKAGE".name) * "CREDIT_PACKAGE".price) AS total
+    FROM "CREDIT_PURCHASE" 
+        INNER JOIN "CREDIT_PACKAGE" 
+        ON "CREDIT_PACKAGE".id = "CREDIT_PURCHASE".credit_package_id
+    WHERE "CREDIT_PURCHASE".purchase_at BETWEEN '2024-11-01' AND '2024-11-30'
+    GROUP BY "CREDIT_PACKAGE".id);
+
 -- 6-5. 查詢：計算 11 月份有預約課程的會員人數（需使用 Distinct，並用 created_at 和 status 欄位統計）
 -- 顯示須包含以下欄位： 預約會員人數
 SELECT
