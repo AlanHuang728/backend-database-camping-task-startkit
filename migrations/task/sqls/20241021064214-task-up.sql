@@ -350,7 +350,7 @@ GROUP BY "CREDIT_PACKAGE".id;
 -- 顯示須包含以下欄位： 總營收
 
 SELECT
-	sum(sale_count * total)
+	sum(sale_count * total) AS 總營收
 FROM (SELECT
         "CREDIT_PACKAGE".name,
         COUNT("CREDIT_PACKAGE".name) AS sale_count,
