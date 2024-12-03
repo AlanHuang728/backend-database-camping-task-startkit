@@ -285,7 +285,7 @@ FROM (
     FROM "CREDIT_PURCHASE"
 	    INNER JOIN "CREDIT_PACKAGE"
 	    ON "CREDIT_PACKAGE".id = "CREDIT_PURCHASE".credit_package_id
-	where user_id = (SELECT id FROM "USER" WHERE email = 'wXlTq@hexschooltest.io')
+	WHERE user_id = (SELECT id FROM "USER" WHERE email = 'wXlTq@hexschooltest.io')
     GROUP BY user_id
     )AS "CREDIT_PURCHASE"
     INNER JOIN (
